@@ -10,9 +10,6 @@ Keep in mind that IUPAC degenerate codes are not supported, only N
 from Bio import SeqIO
 from Bio.Seq import Seq
 import os
-print('Give absolute path to directory containing the fastafile')
-path = str(input())
-os.chdir(path)
 print('Give the name of the fasta file, including extension')
 fasta = str(input())
 print('How would you like to call the output? (include fasta extension)')
