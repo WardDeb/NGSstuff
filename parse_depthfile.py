@@ -1,5 +1,5 @@
 #python3
-num_lines = sum(1 for line in open("BP1.Depth"))
+num_lines = sum(1 for line in open("BP1.depth"))
 with open("BP1.depth") as f:
     tempnumbers = []
     count = 0
