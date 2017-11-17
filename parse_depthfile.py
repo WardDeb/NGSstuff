@@ -1,5 +1,5 @@
 #python3
-from math import log10
+from math import log2
 num_lines = sum(1 for line in open("fulldepth.depth"))
 with open("fulldepth.depth") as f:
     tempnumbers = []
