@@ -26,7 +26,7 @@ with open("fulldepth.depth") as f:
                 avg = round(sum(tempnumbers)/len(tempnumbers),2)
                 start = (int(keeper)*500)+1
                 stop = (int(keeper)*500)+500
-                print(str(node) + ' ' + str(start) + ' ' + str(stop)+ ' ' +str(round(log10(avg),2)))
+                print(str(node) + ' ' + str(start) + ' ' + str(stop)+ ' ' +str(round(log2(avg),2)))
                 keeper += 1
                 count = 0
         if fullnode != line.split("\t")[0]:
@@ -37,7 +37,7 @@ with open("fulldepth.depth") as f:
             if start == stop:
                 print("Shit man one contig is x+1 big :'(, can't deal")
                 break
-            print(str(node) + ' ' + str(start) + ' ' + str(stopreal)+ ' ' +str(round(log10(avg),2)))
+            print(str(node) + ' ' + str(start) + ' ' + str(stopreal)+ ' ' +str(round(log2(avg),2)))
             keeper = 0
             count = 0
         if fullcounty == num_lines:
@@ -51,4 +51,4 @@ with open("fulldepth.depth") as f:
             if start == stop:
                 print("Shit man one contig is x+1 big :'(, can't deal")
                 break
-            print(str(node) + ' ' + str(start) + ' ' + str(stopreal)+ ' ' +str(round(log10(avg),2))) 
+            print(str(node) + ' ' + str(start) + ' ' + str(stopreal)+ ' ' +str(round(log2(avg),2))) 
