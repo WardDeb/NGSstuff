@@ -17,9 +17,16 @@ with open("hitnames.txt") as f:
         col = line.split(" ")[1]
         countup = int(df.loc[row,col])
         countup += 1
-        print(countup)
-        #df[row,col] = countup
         df.at[row,col] = countup
-    print(df)
     df.to_csv("DFtest.tsv", sep='\t')
-
+with open("hitnames.txt") as f:
+    leeg = []
+    for line in f:
+        row = line.split(" ")[0]
+        col = line.split(" ")[1]
+        haha = row + ' ' + col + ' ' + str(df.loc[row,col])
+        leeg.append(haha)
+    leeg = list(set(leeg))
+    for i in leeg:
+        print(i)
+        
