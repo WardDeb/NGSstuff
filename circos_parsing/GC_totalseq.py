@@ -14,4 +14,5 @@ gcstat = []
 for seqrecord in SeqIO.parse(fasta, "fasta"):
     count +=1
     GC = SeqUtils.GC(seqrecord.seq)
+    GC = round(GC,2)
     print(str(seqrecord.id) + ' ' + str(GC))
