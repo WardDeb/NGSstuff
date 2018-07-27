@@ -6,29 +6,40 @@ import pandas as pd
 from collections import defaultdict
 import numpy as np
 import networkx as nx
+from networkx.algorithms.approximation import clique
 def graph(inputfile):
     graphdic = {}
     tracker = []
+    linetracker = 1
+    print("Parsing the blastfile to generate network...")
+    num_lines = sum(1 for line in open(inputfile))
     with open(inputfile) as blasfile:
         for line in blasfile:
+            print("Reading line: " + str(linetracker) + " out of " + str(num_lines))
+            linetracker += 1
             blasline = line.strip().split()
             if float(blasline[2]) > 30 and float(blasline[4]) > 30:
                 quer = str(blasline[0])
                 subj = str(blasline[1])
                 couplestring = quer + ' ' + subj
                 revstring = subj + ' ' + quer
-                if couplestring not in tracker and revstring not in tracker:
-                    if quer not in graphdic:
-                        graphdic[quer] = [subj]
+                if quer not in graphdic:
+                    graphdic[quer] = [subj]
+                    tracker.append(couplestring)
+                    tracker.append(revstring)
+                else:
+                    if subj not in graphdic[quer]:
+                        graphdic[quer].append(subj)
                         tracker.append(couplestring)
                         tracker.append(revstring)
-                    else:
-                        if subj not in graphdic[quer]:
-                            graphdic[quer].append(subj)
-                            tracker.append(couplestring)
-                            tracker.append(revstring)
+    print("Done. creating graph...")
     graphx = nx.Graph(graphdic)
     nx.write_graphml(graphx,'graph.xml')
+    print("Graph written")
+    cliq = list(clique.max_clique(graphx))
+    print(cliq)
+    global larglist
+    larglist = list(cliq)
 def blxparser(inputfile,outputfile):
     parsedic = {}
     selfdic = {}
@@ -37,16 +48,17 @@ def blxparser(inputfile,outputfile):
         for line in blasfile:
             blasline = line.strip().split()
             if float(blasline[2]) > 30 and float(blasline[4]) > 30:
-                couplestring = str(blasline[0]) + ' ' + str(blasline[1])
-                revstring = str(blasline[1]) + ' ' + str(blasline[0])
-                bit = float(blasline[11])
-                if revstring not in parsedic:
-                    if couplestring in parsedic:
-                        oldbit = parsedic[couplestring]
-                        newbit = float(oldbit) + bit
-                        parsedic[couplestring] = newbit
-                    else:
-                        parsedic[couplestring] = bit
+                if blasline[0] in larglist and blasline[1] in larglist:
+                    couplestring = str(blasline[0]) + ' ' + str(blasline[1])
+                    revstring = str(blasline[1]) + ' ' + str(blasline[0])
+                    bit = float(blasline[11])
+                    if revstring not in parsedic:
+                        if couplestring in parsedic:
+                            oldbit = parsedic[couplestring]
+                            newbit = float(oldbit) + bit
+                            parsedic[couplestring] = newbit
+                        else:
+                            parsedic[couplestring] = bit
     for i in parsedic:
         spltstr = i.split(" ")
         if spltstr[0] == spltstr[1]:
@@ -76,7 +88,6 @@ def blxparser(inputfile,outputfile):
         nestdic[s][q] = value
     df = pd.DataFrame(nestdic)
     np.fill_diagonal(df.values, 0)
-    df = df.dropna()
     df.to_csv(outputfile)
 def main(argv):
     inputfile = ''
@@ -100,7 +111,7 @@ def main(argv):
     if outputfile == '':
         print('I need an outputfile')
         sys.exit(2)
-#    blxparser(inputfile,outputfile)
     graph(inputfile)
+    blxparser(inputfile,outputfile)
 if __name__ == "__main__":
     main(sys.argv[1:])
