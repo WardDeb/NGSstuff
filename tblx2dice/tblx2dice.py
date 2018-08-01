@@ -1,5 +1,7 @@
 #WD
 #Tested on Mac / python 3.6.5
+#TODO: leave clique calc for sofisticated algorithm
+# Parse a simple txt list and spew out distance matrix by crossing against given blast file
 import sys,getopt
 from scipy.spatial.distance import squareform
 import pandas as pd
@@ -7,39 +9,56 @@ from collections import defaultdict
 import numpy as np
 import networkx as nx
 from networkx.algorithms.approximation import clique
-def graph(inputfile):
-    graphdic = {}
-    tracker = []
-    linetracker = 1
-    print("Parsing the blastfile to generate network...")
-    num_lines = sum(1 for line in open(inputfile))
-    with open(inputfile) as blasfile:
-        for line in blasfile:
-            print("Reading line: " + str(linetracker) + " out of " + str(num_lines))
-            linetracker += 1
-            blasline = line.strip().split()
-            if float(blasline[2]) > 30 and float(blasline[4]) > 30:
-                quer = str(blasline[0])
-                subj = str(blasline[1])
-                couplestring = quer + ' ' + subj
-                revstring = subj + ' ' + quer
-                if quer not in graphdic:
-                    graphdic[quer] = [subj]
-                    tracker.append(couplestring)
-                    tracker.append(revstring)
-                else:
-                    if subj not in graphdic[quer]:
-                        graphdic[quer].append(subj)
-                        tracker.append(couplestring)
-                        tracker.append(revstring)
-    print("Done. creating graph...")
-    graphx = nx.Graph(graphdic)
-    nx.write_graphml(graphx,'graph.xml')
-    print("Graph written")
-    cliq = list(clique.max_clique(graphx))
-    print(cliq)
-    global larglist
-    larglist = list(cliq)
+#def graph(inputfile):
+#    graphdic = {}
+#    tracker = []
+#    linetracker = 1
+#    print("Parsing the blastfile to generate network...")
+#    num_lines = sum(1 for line in open(inputfile))
+#    edgelist = []
+#    selftrack = []
+#    with open(inputfile) as blasfile:
+#        for line in blasfile:
+#            print("Reading line: " + str(linetracker) + " out of " + str(num_lines))
+#            linetracker += 1
+#            blasline = line.strip().split()
+#            if float(blasline[2]) > 0 and float(blasline[4]) > 0:
+#                quer = str(blasline[0])
+#                subj = str(blasline[1])
+#                sublist = [quer, subj]
+#                if quer not in graphdic:
+#                    graphdic[quer] = [subj]
+#                else:
+#                    if subj not in graphdic[quer]:
+#                        graphdic[quer].append(subj)
+#                if sublist not in edgelist:
+#                    edgelist.append(sublist)
+#                if quer == subj:
+#                    selftrack.append(quer)
+    #for k,v in graphdic.items():
+    #    print(v)
+    #    for i in range(0,len(v)):
+    #        edgelist.append([k,v[i]])
+    #        nodelist.append(k)
+    #        nodelist.append(v[i])
+#    graphx = nx.MultiGraph()
+#    graphx.add_edges_from(edgelist)
+#    for i in edgelist:
+#        comb = i[0] + ' ' + i[1]
+#        print(comb)
+    #print(graphx.nodes())
+    #print("number of nodes:")
+    #print(len(graphx))
+    #print("nodes of self loops:")
+    #print(list(nx.nodes_with_selfloops(graphx)))
+    #nx.write_graphml(graphx,'graph.xml')
+    #print("Graph written")
+    #print(len(selftrack))
+    #print(selftrack)
+    #cliq = list(clique.max_clique(graphx))
+    #print(cliq)
+    #global larglist
+    #larglist = list(cliq)
 def blxparser(inputfile,outputfile):
     parsedic = {}
     selfdic = {}
@@ -47,7 +66,7 @@ def blxparser(inputfile,outputfile):
     with open(inputfile) as blasfile:
         for line in blasfile:
             blasline = line.strip().split()
-            if float(blasline[2]) > 30 and float(blasline[4]) > 30:
+            if float(blasline[2]) > 0 and float(blasline[4]) > 0:
                 if blasline[0] in larglist and blasline[1] in larglist:
                     couplestring = str(blasline[0]) + ' ' + str(blasline[1])
                     revstring = str(blasline[1]) + ' ' + str(blasline[0])
@@ -63,6 +82,7 @@ def blxparser(inputfile,outputfile):
         spltstr = i.split(" ")
         if spltstr[0] == spltstr[1]:
             selfdic[spltstr[0]] = parsedic[i]
+    print(selfdic)
     for i in selfdic:
         spltstr = i.split(" ")
         survivors.append(spltstr[0])
@@ -86,6 +106,7 @@ def blxparser(inputfile,outputfile):
     for (q,s), value in distdic.items():
         nestdic[q][s] = value
         nestdic[s][q] = value
+    print(nestdic)
     df = pd.DataFrame(nestdic)
     np.fill_diagonal(df.values, 0)
     df.to_csv(outputfile)
@@ -111,7 +132,7 @@ def main(argv):
     if outputfile == '':
         print('I need an outputfile')
         sys.exit(2)
-    graph(inputfile)
-    blxparser(inputfile,outputfile)
+#    graph(inputfile)
+#    blxparser(inputfile,outputfile)
 if __name__ == "__main__":
     main(sys.argv[1:])
