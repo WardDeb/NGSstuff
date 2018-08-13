@@ -24,7 +24,7 @@ def parser(inputfile, input2):
             outname = sample + '.' + fasta + '.VCF'
             headerlist = []
             outlist = []
-            vcfstring = "vcf/" + sample + ".QUAL20.vcf"
+            vcfstring = "vcf/" + sample + ".vcf"
             with open(vcfstring) as vcffile:
                 filetracker += 1
                 for line in vcffile:
@@ -34,7 +34,7 @@ def parser(inputfile, input2):
                         if fasta in line:
                             outlist.append(line)
             if len(outlist) != 0:
-                writelist = headerslist + outlist
+                writelist = headerlist + outlist
                 with open(outname, "w") as f:
                     for line in writelist:
                         f.write(line)
