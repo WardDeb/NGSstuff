@@ -1,6 +1,7 @@
 #WD
 #Tested on Mac / python 3.6.5
 #Assumes your VCF's to be sitting in subfolder VCF
+#Also filters VCF on quality 20
 import sys
 import getopt
 import os
@@ -32,7 +33,8 @@ def parser(inputfile, input2):
                         headerlist.append(line)
                     else:
                         if fasta in line:
-                            outlist.append(line)
+                            if float(line.split()[5]) > 20:
+                                outlist.append(line)
             if len(outlist) != 0:
                 writelist = headerlist + outlist
                 with open(outname, "w") as f:
@@ -47,11 +49,11 @@ def main(argv):
     try:
         opts,args = getopt.getopt(argv,"h:i:f:", ["ifile=","ofile="])
     except getopt.GetoptError:
-        print('Need sample list (-i), fastasurvivorlist (-f) and VCF under relative subfolder vcf/sample.QUAL20.vcf')
+        print('Need sample list (-i), fastasurvivorlist (-f) and VCF under relative subfolder vcf/sample.vcf')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('Need sample list (-i), fastasurvivorlist (-f) and VCF under relative subfolder vcf/sample.QUAL20.vcf')
+            print('Need sample list (-i), fastasurvivorlist (-f) and VCF under relative subfolder vcf/sample.vcf')
             sys.exit(2)
         if opt == '-i':
             inputfile = arg
