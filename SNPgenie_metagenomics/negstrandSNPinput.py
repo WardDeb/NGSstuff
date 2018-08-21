@@ -8,7 +8,7 @@ import os
 from Bio import SeqIO
 from Bio.Seq import Seq
 def parser(gfffile, fastafile, vcffile):
-    gffout = gfffile.strip().split('.')[0] + '.rev.gff'
+    gffout = gfffile.strip().split('.')[0] + '.rev.gtf'
     neglist = []
     fixlist = []
     keeptrack = 0
@@ -26,7 +26,7 @@ def parser(gfffile, fastafile, vcffile):
         for orf in neglist:
             newstart = contiglength - int(orf.split()[4]) + 1
             newstop = contiglength - int(orf.split()[3]) + 1
-            newlist = [orf.split()[0],orf.split()[1],orf.split()[2],str(newstart),str(newstop),"+",orf.split()[7],orf.split('\t')[8]]
+            newlist = [orf.split()[0],orf.split()[1],orf.split()[2],str(newstart),str(newstop),orf.split()[5],"+",orf.split()[7],orf.split('\t')[8]]
             newstr = '\t'.join(newlist)
             fixlist.append(newstr)
             keeptrack += 1
@@ -60,33 +60,23 @@ def parser(gfffile, fastafile, vcffile):
             f.write(line2)
     print("VCF written, Done")
 def main(argv):
-    gfffile = ''
-    fastafile = ''
     vcffile = ''
     try:
-        opts,args = getopt.getopt(argv,"h:g:f:v:", ["gfffile=","fastafile","vcffile"])
+        opts,args = getopt.getopt(argv,"h:v:", ["vcffile"])
     except getopt.GetoptError:
-        print('Need gfffile (-g), fastafile(-f) and vcffile(-v) ')
+        print('vcffile(-v),with format Sample.node.vcf ')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('Need gfffile (-g), fastafile(-f) and vcffile(-v)')
+            print('Need vcffile(-v), with format Sample.node.vcf')
             sys.exit(2)
-        if opt == '-g':
-            gfffile = arg
-        if opt == '-f':
-            fastafile = arg
         if opt == '-v':
             vcffile = arg
-    if gfffile == '':
-        print('I need a gfffile(-g)')
-        sys.exit(2)
-    if fastafile == '':
-        print('I need a fastafile (-f)')
-        sys.exit(2)
     if vcffile == '':
         print('I need a vcffile (-v)')
         sys.exit(2)
+    fastafile = vcffile.strip().split('.')[1] + '.fasta'
+    gfffile = vcffile.strip().split('.')[1] + '.gtf'
     parser(gfffile,fastafile,vcffile)
 if __name__ == "__main__":
     main(sys.argv[1:])
