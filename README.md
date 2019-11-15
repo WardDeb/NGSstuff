@@ -1,3 +1,5 @@
 # bash_ngs
 
-Small bash/python scripts for NGS data analysis
+Some python / bash stuff I keep coming back to.
+Not really organized.
+Not really well documented
