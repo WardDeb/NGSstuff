@@ -1,3 +1,4 @@
 # bash_ngs
 
-Some python / bash stuff I keep coming back to.
+A bunch of snippets for various unrelated things.
+Mainly acts as an archive.
