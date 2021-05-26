@@ -41,7 +41,7 @@ def main():
         outBase = seqrecord.id
         tempList = []
         seq = seqrecord.seq
-        tempList.append(['A','C','T','G','GC'])
+        tempList.append(['pos','A','C','T','G','GC'])
         for baseStep, subseq in slider(seq, args.window,1):
             countA = subseq.count('A')
             countC = subseq.count('C')
